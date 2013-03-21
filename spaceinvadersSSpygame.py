@@ -9,7 +9,7 @@ redInvader = pygame.transform.scale(pygame.image.load('red_invader.png'), (30, 2
 blueInvader = pygame.transform.scale(pygame.image.load('blue_invader.png'), (30, 20))
 yellowInvader = pygame.transform.scale(pygame.image.load('yellow_invader.png'), (30, 20))
 
-INVADERS = 20
+INVADERS = 10
 INVADERS_COLORS = {'red': redInvader,
                    'green': greenInvader,
                    'blue': blueInvader,
@@ -30,7 +30,7 @@ class Invader(pygame.sprite.Sprite):
 
         self.screen = pygame.display.get_surface().get_rect()
         self.old = (0, 0, 0, 0)
-        self.image = INVADERS_COLORS.get(color)
+        self.image = INVADERS_COLORS.get(color).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = position[0]
         self.rect.y = position[1]
@@ -46,7 +46,8 @@ def main():
 
     # Make it full screen.
     modes = pygame.display.list_modes()
-    screen = pygame.display.set_mode(modes[0], FULLSCREEN)
+    screen = pygame.display.set_mode((modes[2]), pygame.FULLSCREEN)
+    pygame.FULLSCREEN
     pygame.display.set_caption('Space Invaders Screen Saver - By J. R. Carroll 2013')
 
     # Make a black background.
@@ -61,7 +62,7 @@ def main():
 
     # Display text on the screen that says "you didn't say the magic words"
     # Register a font and size with pygame.  Very important!
-    font = pygame.font.Font(None, 100)
+    font = pygame.font.Font(None, 50)
 
     # The text we want displayed!
     warning = font.render("Nuh-uh-uh... you didn't say the magic words!", 1,
@@ -85,7 +86,11 @@ def main():
 
         randX = random.randint(0, modes[0][0])
         randY = random.randint(0, modes[0][1])
-        pygame.draw.circle(screen, star_color, (randX, randY), 0)
+        star = font.render(".aefaefaefafaefaefaef", 1, (255, 255, 255))
+        starPos = pygame.Rect(20, 20, 20, 20)  # star.get_rect()
+        print starPos, "<-----"
+        background.blit(star, starPos)
+        # pygame.draw.circle(screen, star_color, (randX, randY), 0)
 
     # Draw some invaders!
     allInvaders = []
@@ -116,10 +121,10 @@ def main():
                         blank = pygame.Surface((invader.rect.width, invader.rect.height))
                         blank.fill((0, 0, 0, 0))
                         invader.horizontalSlide()
-                        screen.blit(blank, invader.old)
+                        screen.blit(background, invader.old)
                         screen.blit(invader.image, invader.rect)
-                        pygame.display.update([invader.rect])
-                        if invader.
+                        pygame.display.update([invader.old, invader.rect])
+                        # if invader.
 
     # return Sprites
     all.clear(screen, background)
