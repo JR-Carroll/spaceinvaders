@@ -2,6 +2,7 @@ import wx
 import random
 
 MAX_INVADERS = 10
+
 INVADERS_COLORS = ["yellow_invader",
                    "green_invader",
                    "blue_invader",
@@ -23,6 +24,8 @@ class SpaceFrame(wx.Frame):
         self.panel.SetBackgroundColour('black')
         self.SetBackgroundColour('black')
         self.monitorSize = wx.GetDisplaySize()
+
+        ## Place invaders on the screen (blit to the frame)
         for invader in range(0, MAX_INVADERS, 1):
             randX = random.randint(0, self.monitorSize[0])
             self.showInvader(coords=(randX, 0),
@@ -33,6 +36,7 @@ class SpaceFrame(wx.Frame):
         print self.FindFocus()
 
     def keyboardMovement(self, event, *args):
+        print self, event, args
         self.Destroy()
 
     def showInvader(self, coords=(0, 0), invader="green_invader", scale=.05):

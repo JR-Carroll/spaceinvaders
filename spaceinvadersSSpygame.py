@@ -35,10 +35,60 @@ class Invader(pygame.sprite.Sprite):
         self.rect.x = position[0]
         self.rect.y = position[1]
 
-    def horizontalSlide(self):
-        self.old = self.rect
-        self.rect = self.rect.move([0, 1])
+        # State-machine for keeping track of vertical vs horizontal movement
+        self.moveOptions = ("left", "right", "down")
+        self.lastMove = None
+        self.lastHoriz = None
 
+        # Counter/timer for keeping track of when to move
+        self.moveNow = 0
+
+    def moveInvader(self):
+        """
+        Helper method for determining if the invader needs to move.
+        """
+        self.moveNow += 1
+
+        if(self.moveNow > 50):
+            ## Move the invader down
+            if(self.lastMove is None or self.lastMove is "left"
+                    or self.lastMove is "right"):
+                _move_ = self.verticalSlide()
+                self.lastMove = _move_
+
+            ## Move the invader left/right
+            elif(self.lastMove is "down"):
+                _move_ = self.horizontalSlide(self.lastMove)
+                self.lastMove = _move_
+            self.moveNow = 0
+
+    def verticalSlide(self):
+        """
+        Used to move the invaders down
+        """
+
+        self.old = self.rect
+        self.rect = self.rect.move([0, 10])
+        return "down"
+
+    def horizontalSlide(self, lastMove):
+        """
+        Used to move the invaders left/right
+        """
+
+        if(self.lastHoriz is None or self.lastHoriz is "left"):
+            _leftORRight_ = 10
+            _move_ = "right"
+            print "right", self.lastHoriz
+        elif(self.lastHoriz is "right"):
+            _leftORRight_ = -10
+            _move_ = "left"
+
+        self.old = self.rect
+        self.rect = self.rect.move([_leftORRight_, 0])
+        self.lastHoriz = _move_
+
+        return _move_
 
 def main():
     # Start Pygame.
@@ -86,6 +136,7 @@ def main():
 
         randX = random.randint(0, modes[0][0])
         randY = random.randint(0, modes[0][1])
+
         star = font.render(".aefaefaefafaefaefaef", 1, (255, 255, 255))
         starPos = pygame.Rect(20, 20, 20, 20)  # star.get_rect()
         print starPos, "<-----"
@@ -120,11 +171,10 @@ def main():
                     for invader in allInvaders:
                         blank = pygame.Surface((invader.rect.width, invader.rect.height))
                         blank.fill((0, 0, 0, 0))
-                        invader.horizontalSlide()
+                        invader.moveInvader()
                         screen.blit(background, invader.old)
                         screen.blit(invader.image, invader.rect)
                         pygame.display.update([invader.old, invader.rect])
-                        # if invader.
 
     # return Sprites
     all.clear(screen, background)
