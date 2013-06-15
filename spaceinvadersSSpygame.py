@@ -15,7 +15,13 @@ INVADERS_COLORS = {'red': redInvader,
                    'blue': blueInvader,
                    'yellow': yellowInvader}
 
-SCREENRECT = Rect(0, 0, 640, 480)
+# Invader mapping
+INVADER_LOOKUP = {1: 'red',
+                  2: 'green',
+                  3: 'blue',
+                  4: 'yellow'}
+
+# SCREENRECT = Rect(0, 0, 640, 480)
 STARS = 250
 STAR_COLORS = {'white': (255, 255, 255),
                'black': (0, 0, 0),
@@ -23,7 +29,26 @@ STAR_COLORS = {'white': (255, 255, 255),
                'green': (0, 255, 0),
                'red': (255, 0, 0)}
 
+# Invader layouts
+invaderMap1 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+               [1, 3, 3, 3, 3, 3, 3, 3, 3, 2],
+               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+               [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
+invaderMap2 = [[3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+               [1, 2, 1, 2, 1, 2, 1, 2, 1, 2],
+               [2, 1, 2, 2, 2, 1, 2, 2, 2, 1],
+               [2, 2, 1, 2, 2, 2, 1, 2, 2, 1]]
+
+invaderMap3 = [[2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2],
+               [1, 2, 3, 3, 3, 3, 3, 3, 3, 2, 1],
+               [2, 3, 2, 1, 2, 1, 1, 2, 1, 2, 3]]
+
+# Cache of all the invader positions.
+allInvaderMaps = (invaderMap1, invaderMap2, invaderMap3)
+
+# Base class for invaders
 class Invader(pygame.sprite.Sprite):
     def __init__(self, position, color="green"):
         pygame.sprite.Sprite.__init__(self)
@@ -79,7 +104,6 @@ class Invader(pygame.sprite.Sprite):
         if(self.lastHoriz is None or self.lastHoriz is "left"):
             _leftORRight_ = 10
             _move_ = "right"
-            print "right", self.lastHoriz
         elif(self.lastHoriz is "right"):
             _leftORRight_ = -10
             _move_ = "left"
@@ -87,7 +111,6 @@ class Invader(pygame.sprite.Sprite):
         self.old = self.rect
         self.rect = self.rect.move([_leftORRight_, 0])
         self.lastHoriz = _move_
-
         return _move_
 
 def main():
@@ -97,7 +120,7 @@ def main():
     # Make it full screen.
     modes = pygame.display.list_modes()
     screen = pygame.display.set_mode((modes[2]), pygame.FULLSCREEN)
-    pygame.FULLSCREEN
+    # pygame.FULLSCREEN
     pygame.display.set_caption('Space Invaders Screen Saver - By J. R. Carroll 2013')
 
     # Make a black background.
@@ -105,7 +128,7 @@ def main():
     background.fill((0, 0, 0))
 
     # Keep track of sprites.
-    all = pygame.sprite.RenderUpdates()
+    # allSprites = pygame.sprite.RenderUpdates()
 
     # Keep track of time.
     clock = pygame.time.Clock()
@@ -116,13 +139,12 @@ def main():
 
     # The text we want displayed!
     warning = font.render("Nuh-uh-uh... you didn't say the magic words!", 1,
-                         (255, 255, 255))
+                         (100, 100, 100))
     textpos = warning.get_rect()
     textpos.centerx = background.get_rect().centerx
-    background.blit(warning, textpos)
 
     # Blit the background and all that's drawn to it!
-    screen.blit(background, (0, 0))
+    background.blit(warning, textpos)
 
     # Draw the stars.
     for star in range(0, STARS, 1):
@@ -136,21 +158,34 @@ def main():
 
         randX = random.randint(0, modes[0][0])
         randY = random.randint(0, modes[0][1])
+        pygame.draw.circle(background, star_color, (randX, randY), 0)
 
-        star = font.render(".aefaefaefafaefaefaef", 1, (255, 255, 255))
-        starPos = pygame.Rect(20, 20, 20, 20)  # star.get_rect()
-        print starPos, "<-----"
-        background.blit(star, starPos)
-        # pygame.draw.circle(screen, star_color, (randX, randY), 0)
+    # background.blit(background, (0,0))
+    screen.blit(background, (0, 0))
 
     # Draw some invaders!
     allInvaders = []
-    for invader in range(0, INVADERS, 1):
-        randX = random.randint(0, modes[0][0])
-        randColor = random.choice(INVADERS_COLORS.keys())
-        invader = Invader((randX, 100), randColor)
-        allInvaders.append(invader)
-        screen.blit(invader.image, (randX, 100))
+
+    firstRowInvader = 100
+    spaceInvaderRowHeight = 50
+
+    for marchingLine in random.choice(allInvaderMaps):
+        firstInvader = 350
+        spaceInvaderWidth = 50
+
+        for newInvader in marchingLine:
+            invader = Invader((firstInvader, firstRowInvader), INVADER_LOOKUP.get(newInvader))
+            allInvaders.append(invader)
+            firstInvader += spaceInvaderWidth
+
+        firstRowInvader += spaceInvaderRowHeight
+
+    # for invader in range(0, INVADERS, 1):
+    #     randX = random.randint(0, modes[0][0])
+    #     randColor = random.choice(INVADERS_COLORS.keys())
+    #     invader = Invader((randX, 100), randColor)
+    #     allInvaders.append(invader)
+        # background.blit(invader.image, (randX, 100))
 
     # Update the game and draw the scene
     pygame.display.update()
@@ -169,42 +204,24 @@ def main():
 
                 if slide is True:
                     for invader in allInvaders:
-                        blank = pygame.Surface((invader.rect.width, invader.rect.height))
-                        blank.fill((0, 0, 0, 0))
                         invader.moveInvader()
-                        screen.blit(background, invader.old)
+                        screen.blit(background, invader.old, invader.old)
                         screen.blit(invader.image, invader.rect)
                         pygame.display.update([invader.old, invader.rect])
 
     # return Sprites
-    all.clear(screen, background)
+    # allSprites.clear(screen, background)
 
     # redraw the sprites
-    all.update()
+    # allSprites.update()
 
     # maintain frame rate
-    dirty = all.draw(screen)
-    pygame.display.update(dirty)
+    # dirty = allSprites.draw(screen)
+    # pygame.display.update(dirty)
 
     # maintain frame rate
     clock.tick(90)
 
-
-def magicword():
-    # Display text on the screen that describes that magic key combinations
-    # Register a font and size with pygame!  Very important
-    font = pygame.font.Font(None, 15)
-    # The text we want displayed!
-    warning = font.render("Nuh-uh-uh... you didn't say the magic word!", 1,
-                         (255, 255, 255))
-    textpost = warning.get_rect()
-    textpost.centerx = background.get_rect().centerx
-    background.blit(warning, textpos)
-
-
-def allMove(allInvaders):
-    for invader in allInvaders:
-        invader.horizontalSlide()
 
 if __name__ == '__main__':
     main()
