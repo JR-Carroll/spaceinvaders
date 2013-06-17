@@ -45,8 +45,14 @@ invaderMap3 = [[2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2],
                [1, 2, 3, 3, 3, 3, 3, 3, 3, 2, 1],
                [2, 3, 2, 1, 2, 1, 1, 2, 1, 2, 3]]
 
+invaderMap4 = [[4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 1, 1, 1, 1, 1],
+               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+               [4, 4, 3, 3, 4, 4, 3, 3, 4, 4, 1, 1, 1, 1, 1],
+               [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+               [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
 # Cache of all the invader positions.
-allInvaderMaps = (invaderMap1, invaderMap2, invaderMap3)
+allInvaderMaps = (invaderMap1, invaderMap2, invaderMap3, invaderMap4)
 
 # Base class for invaders
 class Invader(pygame.sprite.Sprite):
@@ -72,7 +78,7 @@ class Invader(pygame.sprite.Sprite):
         """
         Helper method for determining if the invader needs to move.
         """
-        self.moveNow += 1
+        self.moveNow = 51
 
         if(self.moveNow > 50):
             ## Move the invader down
@@ -85,7 +91,6 @@ class Invader(pygame.sprite.Sprite):
             elif(self.lastMove is "down"):
                 _move_ = self.horizontalSlide(self.lastMove)
                 self.lastMove = _move_
-            self.moveNow = 0
 
     def verticalSlide(self):
         """
@@ -131,7 +136,7 @@ def main():
     # allSprites = pygame.sprite.RenderUpdates()
 
     # Keep track of time.
-    clock = pygame.time.Clock()
+    # clock = pygame.time.Clock()
 
     # Display text on the screen that says "you didn't say the magic words"
     # Register a font and size with pygame.  Very important!
@@ -189,19 +194,19 @@ def main():
 
     # Update the game and draw the scene
     pygame.display.update()
-    pygame.time.set_timer(26, 1)
+    pygame.time.set_timer(26, 500)
 
     slide = True
     # Main Game loop!
     while True:
         for event in pygame.event.get():
+            print event, dir(event)
             if event.type == QUIT \
                 or (event.type == KEYDOWN and
                     event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
             elif event.type == 26:
-
                 if slide is True:
                     for invader in allInvaders:
                         invader.moveInvader()
@@ -220,7 +225,7 @@ def main():
     # pygame.display.update(dirty)
 
     # maintain frame rate
-    clock.tick(90)
+    # clock.tick(90)
 
 
 if __name__ == '__main__':
